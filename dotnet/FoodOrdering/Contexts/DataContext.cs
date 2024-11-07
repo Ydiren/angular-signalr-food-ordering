@@ -10,13 +10,7 @@ public class DataContext : DbContext
 
   private readonly string _dbPath;
 
-  public DataContext()
+  public DataContext(DbContextOptions<DataContext> options) : base(options)
   {
-    var folder = Environment.SpecialFolder.LocalApplicationData;
-    var path = Environment.GetFolderPath(folder);
-    _dbPath = System.IO.Path.Join(path, "foodOrdering.db");
   }
-
-  protected override void OnConfiguring(DbContextOptionsBuilder options)
-    => options.UseSqlite($"Data Source={_dbPath}");
 }

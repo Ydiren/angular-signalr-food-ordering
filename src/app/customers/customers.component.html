@@ -13,7 +13,7 @@
     <p>
       <i>{{food.description}}</i>
     </p>
-    <button [disabled]="!tableNumber" (click)="sendFoodOrder(food.id, tableNumber!)">Order {{food.name}}</button>
+    <button [disabled]="!tableNumber" (click)="sendOrder(food.id, tableNumber!)">Order {{food.name}}</button>
   </div>
   }
 </div>

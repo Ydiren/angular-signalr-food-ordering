@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr'
 import { Subject, Observable } from 'rxjs';
-import { FoodRequest, Order, OrderState } from '../../src/app/models/data';
+import { FoodRequest, Order, OrderState } from '../models/data';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RealTimeClientService {
 
-  private hubConnection: signalR.HubConnection;
+  private hubConnection?: signalR.HubConnection;
   private pendingFoodUpdatedSubject = new Subject<Order[]>();
   ordersUpdated$: Observable<Order[]> = this.pendingFoodUpdatedSubject.asObservable();
 
-  constructor() {
+  constructor() { }
+
+  connect() {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl("http://localhost:4200/foodhub")
       .build();
@@ -30,13 +32,13 @@ export class RealTimeClientService {
   async orderFoodItem(foodId: number, table: number) {
     console.log("Ordering");
 
-    await this.hubConnection.invoke("OrderFoodItem", {
+    await this.hubConnection?.invoke("OrderFoodItem", {
       foodId,
       table
     } as FoodRequest);
   }
 
   async updateFoodItem(orderId: number, state: OrderState) {
-    await this.hubConnection.invoke("UpdateFoodItem", orderId, state)
+    await this.hubConnection?.invoke("UpdateFoodItem", orderId, state)
   }
 }

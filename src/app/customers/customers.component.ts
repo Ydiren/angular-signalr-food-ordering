@@ -1,13 +1,20 @@
 import { Component, signal } from '@angular/core';
-import { RealTimeClientService } from '../../../dotnet/FoodOrdering/real-time-client.service';
-import { HttpClient } from '@microsoft/signalr';
+import { RealTimeClientService } from '../services/real-time-client.service';
 import { FoodItem, Order } from '../models/data'
 import { firstValueFrom, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { JsonPipe, NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [],
+  imports: [
+    ReactiveFormsModule,
+    NgOptimizedImage,
+    JsonPipe,
+    FormsModule
+  ],
   templateUrl: './customers.component.html',
   styleUrl: './customers.component.css'
 })
@@ -15,6 +22,8 @@ export class CustomersComponent {
   availableFood = signal<Array<FoodItem>>([]);
   activeOrders = signal<Array<Order>>([]);
   activeOrdersSubscription?: Subscription;
+  showActiveOrders = false;
+  tableNumber?: number;
 
   constructor(private realtime: RealTimeClientService, private http: HttpClient) { }
 
@@ -28,5 +37,15 @@ export class CustomersComponent {
     this.activeOrdersSubscription = this.realtime.ordersUpdated$.subscribe(orders => {
       this.activeOrders.set([...orders]);
     })
+
+    this.realtime.connect();
+  }
+
+  async sendOrder(foodId: number, tableNumber: number) {
+    await this.realtime.orderFoodItem(foodId, tableNumber);
+  }
+
+  showActiveOrdersToggle() {
+    this.showActiveOrders = !this.showActiveOrders;
   }
 }
